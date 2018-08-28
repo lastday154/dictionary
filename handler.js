@@ -19,7 +19,7 @@ module.exports.createDictionary = async (event, context, callback) => {
     callback(null, {
       statusCode: err.statusCode || 501,
       headers: { "Content-Type": "text/plain" },
-      body: "Couldn't create the  dictionary."
+      body: { error: true, message: "Couldn't create the  dictionary." }
     });
   }
 };

@@ -33,6 +33,13 @@ functions:
           path: dictionary
           method: get
           cors: true
+  getDictionary:
+    handler: models/dictionary/get.get
+    events:
+      - http:
+          path: definition
+          method: get
+          cors: true
 plugins:
   - serverless-offline
 package:
