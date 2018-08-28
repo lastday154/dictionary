@@ -1,41 +1,25 @@
-'use strict';
+"use strict";
 
-const uuid = require('uuid');
-const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
+const { getDictionary } = require("./libs/word");
+const { batchInsert } = require("./models/dictionary/batchInsert");
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient({region: 'us-east-1'});
-
-module.exports.createDictionary = (event, context, callback) => {
-  const timestamp = new Date().getTime();
-  const params = {
-    TableName: process.env.DICTIONARY_TABLE,
-    Item: {
-      id: uuid.v1(),
-      text: 'test',
-      checked: false,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    },
-  };
-
-  // write the todo to the database
-  dynamoDb.put(params, (error) => {
-    // handle potential errors
-    if (error) {
-      console.error(error);
-      callback(null, {
-        statusCode: error.statusCode || 501,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Couldn\'t create the todo item.',
-      });
-      return;
-    }
-
-    // create a response
+module.exports.createDictionary = async (event, context, callback) => {
+  try {
+    const data = await getDictionary();
+    await batchInsert({
+      list: data
+    });
     const response = {
       statusCode: 200,
-      body: JSON.stringify(params.Item),
+      body: JSON.stringify(data)
     };
     callback(null, response);
-  });
+  } catch (err) {
+    console.log(err);
+    callback(null, {
+      statusCode: err.statusCode || 501,
+      headers: { "Content-Type": "text/plain" },
+      body: "Couldn't create the  dictionary."
+    });
+  }
 };

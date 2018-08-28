@@ -1,9 +1,9 @@
 # serverless.yml
 
-service: my-express-application
+service: dictionary
 
 custom:
-  tableName: 'dictionary-${self:provider.stage}'
+  tableName: "dictionary-${self:provider.stage}"
 
 provider:
   name: aws
@@ -19,8 +19,9 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
+        - dynamodb:BatchWriteItem
       Resource:
-        - { "Fn::GetAtt": ["DictionaryDynamoDBTable", "Arn" ] }
+        - { "Fn::GetAtt": ["DictionaryDynamoDBTable", "Arn"] }
   environment:
     DICTIONARY_TABLE: ${self:custom.tableName}
 
@@ -40,15 +41,13 @@ package:
 resources:
   Resources:
     DictionaryDynamoDBTable:
-      Type: 'AWS::DynamoDB::Table'
+      Type: "AWS::DynamoDB::Table"
       Properties:
         AttributeDefinitions:
-          -
-            AttributeName: id
+          - AttributeName: id
             AttributeType: S
         KeySchema:
-          -
-            AttributeName: id
+          - AttributeName: id
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
