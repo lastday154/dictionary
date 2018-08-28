@@ -62,5 +62,7 @@ const getDictionary = async () => {
   }
 };
 module.exports = {
-  getDictionary
+  getDictionary,
+  getWords,
+  getDefinitions
 };
