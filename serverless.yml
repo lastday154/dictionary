@@ -1,0 +1,56 @@
+# serverless.yml
+
+service: my-express-application
+
+custom:
+  tableName: 'dictionary-${self:provider.stage}'
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": ["DictionaryDynamoDBTable", "Arn" ] }
+  environment:
+    DICTIONARY_TABLE: ${self:custom.tableName}
+
+functions:
+  createDictionary:
+    handler: handler.createDictionary
+    events:
+      - http:
+          path: dictionary
+          method: get
+          cors: true
+plugins:
+  - serverless-offline
+package:
+  exclude:
+    - test/**
+resources:
+  Resources:
+    DictionaryDynamoDBTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.tableName}
