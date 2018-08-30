@@ -34,9 +34,8 @@ npm test
 In order to deploy the endpoint simply run
 
 ```bash
-serverless deploy
+npm run deploy
 ```
-
 The expected result should be similar to:
 
 ```bash
