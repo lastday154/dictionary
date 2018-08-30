@@ -8,13 +8,14 @@ const getWords = filePath => {
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, { encoding: "utf-8" }, function(err, data) {
       if (!err) {
-        const words = data
+        const words = {};
+        data
           .toLowerCase()
           .split(/[ \n]+/)
-          .filter((item, index, items) => {
-            return index == items.indexOf(item);
+          .forEach(word => {
+            words[word] = true;
           });
-        resolve(words);
+        resolve(Object.keys(words));
       } else {
         reject(err);
       }
